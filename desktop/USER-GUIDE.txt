@@ -1,0 +1,27 @@
+RISER STUDIO — DESIGN WORKSPACE
+
+Extract the whole ZIP, then run Riser-Studio.exe on Windows 10/11 x64.
+Use File > Save As to keep separate .riser project files. Existing projects import normally.
+
+Open DESIGN TOOLS in the top toolbar:
+
+1. DESIGN CHECKS — live missing-data and consistency warnings; click an item to locate it. Export a review report.
+2. LOADS & DEMAND — choose entered load, downstream equipment or DB circuit schedule as one exclusive basis. Diversity defaults to 1.00. Enable calculated feeder load to coordinate breaker/cable sizing. View MSB section totals and phase currents.
+3. UNDO / REDO — toolbar or Ctrl+Z / Ctrl+Shift+Z for project changes; text fields retain text editing. Up to 40 changes per session.
+4. RECOVERY — up to three project-specific local recovery points, captured at most every 20 seconds while editing. Save files for backups.
+5. LAYOUT — dragging is enabled by default in Diagram and Sheet views. Use the visible Move equipment toggle or arrow controls. Positions snap to 20 units and expand the assigned level when needed; moving a DB sideways reroutes its feeder. Reset positions restores automatic alignment. T-off columns move together. Lock positions or reset layout.
+6. EXCEL — export real .xlsx workbooks, edit Equipment / DB Circuits, reimport and review the validation result, then Apply. Equipment IDs and parent IDs preserve connectivity. Blank IDs add equipment. Missing rows do not delete items. Report sheets are read-only on import. Paste formulas as values.
+7. TEMPLATES — commercial/residential starters, saved personal templates, and portable .risertemplate import/export. Templates always create independent projects.
+8. REVISIONS — capture a baseline, then compare additions/changes/deletions. Enable clouds and export the change register.
+9. DB COORDINATION — double-click a DB, save an active circuit, then enter design load and diversity in Circuit load coordination. Under Loads & demand choose DB circuit schedule and enable calculated feeder load. Breaker ratings are not assumed to be actual loads.
+10. SIZING BASIS — review every candidate cable, corrected capacity, voltage drop, governing constraint and source profile.
+11. DEVICE PRESETS — 72 published Schneider Electric / ABB fixed-device options, with source references. Apply to a matching elevation way to transfer dimensions and available Icu at 415 V. Legacy body data is labelled. Project overrides remain optional.
+12. PROTECTION REVIEW — use published Icu or enter study data to check breaking capacity, Zs x Ia <= U0, adiabatic k^2 S^2 >= I^2 t and separation of entered time-current bands. Missing study data stays pending.
+
+Diversity factors compound at each board; the app does not infer statutory diversity.
+Manufacturer data is published reference data, not project or switchboard assembly approval.
+Body dimensions exclude accessories and required clearances. Fixed compartment rules remain active.
+Protection worksheet does not calculate network fault levels or establish energy selectivity/cascading.
+Cable sizing, protection settings and switchboard assemblies require engineering verification.
+
+This portable executable is unsigned and has not been launch-tested on Windows.

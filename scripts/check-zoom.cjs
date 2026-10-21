@@ -1,0 +1,17 @@
+const fs=require('fs'),vm=require('vm'),assert=require('node:assert/strict');
+const source=fs.readFileSync(require('path').join(__dirname,'../dist/index.html'),'utf8');
+const handlers={},elements={};const element=()=>({innerHTML:'',textContent:'',value:'',querySelectorAll:()=>[]});
+elements.drawingViewport={...element(),clientWidth:900,clientHeight:640,scrollLeft:0,scrollTop:0,addEventListener:(name,callback)=>handlers[name]=callback,getBoundingClientRect:()=>({left:50,top:80})};
+const context={structuredClone,console,crypto:require('crypto').webcrypto,document:{getElementById:id=>elements[id]??=element()},localStorage:{getItem:()=>null,setItem:()=>{}},window:{addEventListener:()=>{},print:()=>{}},confirm:()=>true,alert:message=>{throw Error(message)},ResizeObserver:class{constructor(callback){handlers.resize=callback}observe(){}}};
+vm.createContext(context);vm.runInContext(source.match(/<script>([\s\S]*)<\/script>/)[1],context);
+const run=code=>vm.runInContext(code,context);run("state.sheetSize='A3';render()");
+run(`{setViewMode('sheet');setZoom(.5);if(!$('diagram').innerHTML.includes('width:840px;height:594px'))throw Error('Sheet must scale both axes at 50%');if($('zoomLabel').textContent!=='50%')throw Error('Readout');setZoom(1);if(!$('diagram').innerHTML.includes('width:1680px;height:1188px'))throw Error('Sheet 100%');setZoom(2);if(!$('diagram').innerHTML.includes('width:3360px;height:2376px'))throw Error('Sheet 200%');const print=buildSheet();if(!print.includes('width:420mm;height:297mm'))throw Error('Zoom changes printed page size');setZoom('fit');const expected=Math.min((900-36)/1680,(640-36)/1188);if(Math.abs(zoom-expected)>1e-10)throw Error('Fit both viewport axes');if($('drawingViewport').scrollLeft!==0||$('drawingViewport').scrollTop!==0)throw Error('Fit resets pan');}`);
+run(`{setViewMode('diagram');const size=drawingDimensions();setZoom(.25);if(!$('diagram').innerHTML.includes('width:'+(size.width*.25)+'px;height:'))throw Error('Diagram scale');setZoom('fit');if(size.width*zoom>864.001||size.height*zoom>604.001)throw Error('Complete diagram including title preview must fit');setZoom(99);if(zoom!==4)throw Error('Max zoom');setZoom(.001);if(zoom!==.01)throw Error('Min zoom');const old=zoom;setZoom('invalid');if(zoom!==old)throw Error('Invalid input');}`);
+run(`{setViewMode('sheet');setZoom(1);const v=$('drawingViewport');v.scrollLeft=300;v.scrollTop=400;setZoom(2,{anchorX:200,anchorY:150});if(v.scrollLeft!==782||v.scrollTop!==932)throw Error('Zoom must preserve content under cursor');}`);
+let prevented=false;handlers.wheel({ctrlKey:true,metaKey:false,deltaY:-100,clientX:250,clientY:230,preventDefault(){prevented=true}});assert(prevented);assert(Math.abs(run('zoom')-2.24)<1e-10);
+const previous=run('zoom');handlers.wheel({ctrlKey:false,metaKey:false,deltaY:-100,preventDefault(){throw Error('Regular scrolling blocked')}});assert.equal(run('zoom'),previous);
+run("setZoom('fit')");elements.drawingViewport.clientWidth=480;elements.drawingViewport.clientHeight=350;handlers.resize();assert(Math.abs(run('zoom')-Math.min(444/1680,314/1188))<1e-10);
+run("newProject();setViewMode('diagram');setZoom('fit');preparePrint();if(!$('printSheet').innerHTML.includes('data-title-block'))throw Error('Title block absent from print')");
+assert(source.includes('class="drawing-viewport" id="drawingViewport"'));
+assert(source.includes('.toolbar'));
+console.log('PASS: sheet and diagram zoom; both-axis Fit; 1–400% limits; percentage; cursor anchor; Ctrl-wheel; resize; physical A3 printing.');

@@ -1,0 +1,8 @@
+{
+  "name": "riser-studio-desktop",
+  "productName": "Riser Studio",
+  "version": "1.0.0",
+  "description": "Offline electrical schematic, board elevation and DB schedule editor",
+  "main": "main.cjs",
+  "private": true
+}
